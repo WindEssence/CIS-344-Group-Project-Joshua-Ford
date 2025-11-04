@@ -10,7 +10,6 @@ require 'connect.php';
 </head>
 <body>
   <h1>Available Properties</h1>
-
   <?php
   $stmt = $pdo->query("
     SELECT l.listing_id, l.title, l.description, l.price, l.location, u.full_name AS landlord
@@ -18,16 +17,13 @@ require 'connect.php';
     JOIN users u ON l.landlord_id = u.user_id
     ORDER BY l.created_at DESC
   ");
-
   while ($row = $stmt->fetch()) {
-    // escape output to prevent XSS
     $title = htmlspecialchars($row['title']);
     $desc  = htmlspecialchars($row['description']);
     $loc   = htmlspecialchars($row['location']);
     $land  = htmlspecialchars($row['landlord']);
     $price = number_format($row['price'],2);
     $id    = $row['listing_id'];
-
     echo "<div class='card'>
             <h2>{$title}</h2>
             <p>{$desc}</p>
@@ -40,3 +36,4 @@ require 'connect.php';
   ?>
 </body>
 </html>
+
