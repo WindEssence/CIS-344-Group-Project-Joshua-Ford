@@ -1,9 +1,8 @@
 <?php
-// connect.php - PDO connection
 $host = '127.0.0.1';
 $db   = 'realestate_db';
 $user = 'root';
-$pass = 'Joshua8709!?'; // default XAMPP
+$pass = 'Joshua8709!?';
 $charset = 'utf8mb4';
 
 $dsn = "mysql:host=$host;dbname=$db;charset=$charset";
@@ -16,6 +15,6 @@ $options = [
 try {
   $pdo = new PDO($dsn, $user, $pass, $options);
 } catch (\PDOException $e) {
-  // In development: show error. In final report: say "DB connection failed".
   throw new \PDOException($e->getMessage(), (int)$e->getCode());
 }
+
