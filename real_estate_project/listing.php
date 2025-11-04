@@ -31,7 +31,7 @@ if (!$listing) { die('Listing not found'); }
     End Date: <input type="date" name="end_date" required><br><br>
     <button type="submit">Request Booking</button>
   </form>
-
   <p><a href="index.php">Back to listings</a></p>
 </body>
 </html>
+
