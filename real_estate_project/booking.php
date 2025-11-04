@@ -1,28 +1,19 @@
 <?php
 require 'connect.php';
-
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
   header('Location: index.php');
   exit;
 }
-
 $tenant_id  = (int)($_POST['tenant_id'] ?? 0);
 $listing_id = (int)($_POST['listing_id'] ?? 0);
 $start_date = $_POST['start_date'] ?? '';
 $end_date   = $_POST['end_date'] ?? '';
-
 if (!$tenant_id || !$listing_id || !$start_date || !$end_date) {
   die('Missing fields');
 }
-
-// Basic date validity
 if ($start_date > $end_date) { die('Start date must be before end date'); }
-
 try {
-  // Begin transaction
   $pdo->beginTransaction();
-
-  // Lock bookings for this listing to avoid race condition
   $check = $pdo->prepare("
     SELECT COUNT(*) AS cnt
     FROM bookings
@@ -33,15 +24,12 @@ try {
   ");
   $check->execute([':lid'=>$listing_id, ':start'=>$start_date, ':end'=>$end_date]);
   $conflict = (int)$check->fetchColumn();
-
   if ($conflict > 0) {
     $pdo->rollBack();
     echo "<p style='color:red;'>This listing is already booked for the chosen dates.</p>";
     echo "<p><a href='listing.php?id={$listing_id}'>Back</a></p>";
     exit;
   }
-
-  // Insert booking as 'pending' (minimal workflow)
   $ins = $pdo->prepare("
     INSERT INTO bookings (tenant_id, listing_id, start_date, end_date, status)
     VALUES (:tenant, :listing, :start, :end, 'confirmed')
@@ -53,13 +41,10 @@ try {
     ':end'=>$end_date
   ]);
   $bookingId = $pdo->lastInsertId();
-
-  // Simulate a payment record (we do not store raw card data)
   $pay = $pdo->prepare("
     INSERT INTO payments (booking_id, provider, provider_ref, last4, amount, status)
     VALUES (:bid, 'simulated', :ref, :last4, :amt, 'succeeded')
   ");
-  // For simplicity take listing price * number of days as amount
   $days = (new DateTime($end_date))->diff(new DateTime($start_date))->days + 1;
   $priceStmt = $pdo->prepare("SELECT price FROM listings WHERE listing_id = ?");
   $priceStmt->execute([$listing_id]);
@@ -69,13 +54,10 @@ try {
   $pay->execute([
     ':bid' => $bookingId,
     ':ref' => 'SIM' . time(),
-    ':last4'=> '0000',      // store only last4 — in real app use token from provider
+    ':last4'=> '0000',
     ':amt' => $amount
   ]);
-
-  // Commit transaction
   $pdo->commit();
-
   echo "<p style='color:green;'>Booking confirmed! Booking ID: {$bookingId}</p>";
   echo "<p><a href='index.php'>Back to listings</a></p>";
 } catch (Exception $e) {
