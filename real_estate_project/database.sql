@@ -50,3 +50,17 @@ VALUES
 (1, 'Cozy 1BR', 'Cozy one-bedroom near downtown. Perfect for single tenants.', 1200.00, 'Downtown');
 (2, 'Modern Studio Apartment', 'A bright studio apartment with modern kitchen and walk-in closet. Perfect for single tenants.', 950.00, 'Uptown');
 (3, 'Spacious 3-Bedroom Family Home', 'Large family home with backyard, garage, and updated kitchen. Near schools and parks.', 2500.00, 'Suburban Area');
+
+
+SELECT l.*, u.full_name AS landlord FROM listings l
+JOIN users u ON l.landlord_id = u.user_id;
+
+SELECT b.*, u.full_name AS tenant, l.title AS property
+FROM bookings b
+JOIN users u ON b.tenant_id = u.user_id
+JOIN listings l ON b.listing_id = l.listing_id;
+
+SELECT p.*, b.start_date, l.title
+FROM payments p
+JOIN bookings b ON p.booking_id = b.booking_id
+JOIN listings l ON b.listing_id = l.listing_id;
