@@ -24,14 +24,31 @@ if (!$listing) { die('Listing not found'); }
   <p><strong>Landlord:</strong> <?=htmlspecialchars($listing['landlord'])?></p>
 
   <h3>Book this property</h3>
-  <form action="booking.php" method="post">
+<form action="booking.php" method="post">
     <input type="hidden" name="listing_id" value="<?= (int)$listing['listing_id'] ?>">
-    Tenant ID: <input type="number" name="tenant_id" required><br><br>
-    Start Date: <input type="date" name="start_date" required><br><br>
-    End Date: <input type="date" name="end_date" required><br><br>
+
+    Tenant ID: 
+    <input type="number" name="tenant_id" required><br><br>
+
+    Your Full Name:
+    <input type="text" name="contact_name" required><br><br>
+
+    Your Phone Number:
+    <input type="text" name="contact_phone" required><br><br>
+
+    Your Email:
+    <input type="email" name="contact_email" required><br><br>
+
+    Start Date:
+    <input type="date" name="start_date" required><br><br>
+
+    End Date:
+    <input type="date" name="end_date" required><br><br>
+
     <button type="submit">Request Booking</button>
-  </form>
+</form>
+
+
   <p><a href="index.php">Back to listings</a></p>
 </body>
 </html>
-
